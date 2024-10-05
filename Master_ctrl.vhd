@@ -253,6 +253,7 @@ type T_UART_TX_STATE_TYPE is        ( ST_RESP_IDLE,         ST_RESP_CHECK,
  
 
  signal m_time_sec_freq		:std_logic_vector(27 downto 0);
+ signal m_time_full_cnt_value :std_logic_vector(27 downto 0);
  signal mtime_sec_counter	:std_logic_vector(15 downto 0);
  signal mtime_start			:std_logic;
  signal mtime_cnt_done		:std_logic;
@@ -288,6 +289,7 @@ begin
  int_reg_addr <=to_integer(unsigned(s_reg_addr));
  
  mtime_preset <=  ctrl_reg_array(RADICAL_MTIME_PRESET_VALUE)(15 downto 0);
+ m_time_full_cnt_value <=  ctrl_reg_array(RADICAL_MTIME_FULL_CNT_VALUE)(27 downto 0);
 
 -- *********************************************************************************************** time counter process **********************************************************************************************************************
 mtime_start_Rising_Proc: process (i_reset, i_clk)
@@ -317,7 +319,7 @@ begin
 
 		if(mtime_start = '1' and mtime_cnt_done = '0') then
 			if(mtime_sec_counter < mtime_preset) then
-				if(m_time_sec_freq = x"0000063") then            -- x"0000063" 1000 ns = 1us 25 samples, (4us = 100 samples)/peak, 1000 us = 250 peaks
+				if(m_time_sec_freq = m_time_full_cnt_value) then            -- x"0000063" 1000 ns = 1us 25 samples, (4us = 100 samples)/peak, 1000 us = 250 peaks
 					m_time_sec_freq   <= (others => '0'); 
 					mtime_sec_counter <= mtime_sec_counter + '1';
 				else
@@ -436,7 +438,8 @@ begin
         ctrl_reg_array(P_SWEPT_DR2_REG)               <=  x"00000000"; 
 
         ctrl_reg_array(RADICAL_MTIME_START_CTRL_REG)  <=  x"00000000";
-        ctrl_reg_array(RADICAL_MTIME_PRESET_VALUE)    <=  x"000003E8";
+        ctrl_reg_array(RADICAL_MTIME_PRESET_VALUE)    <=  x"00000001";
+        ctrl_reg_array(RADICAL_MTIME_FULL_CNT_VALUE)  <=  x"0001869F"; 
         
         ctrl_reg_array(P_SWEPT_DUMP_CH1_REG)          <=  x"00000000";
         ctrl_reg_array(P_SWEPT_DUMP_CH2_REG)          <=  x"00000000";
@@ -512,8 +515,11 @@ begin
                     when RADICAL_MTIME_START_CTRL_REG =>
 						ctrl_reg_array(RADICAL_MTIME_START_CTRL_REG)   		            <= s_wr_reg_data;     
                     when RADICAL_MTIME_PRESET_VALUE =>
-						ctrl_reg_array(RADICAL_MTIME_PRESET_VALUE)   		            <= s_wr_reg_data;     
+						ctrl_reg_array(RADICAL_MTIME_PRESET_VALUE)   		            <= s_wr_reg_data;   
 
+                    when RADICAL_MTIME_FULL_CNT_VALUE =>
+						ctrl_reg_array(RADICAL_MTIME_FULL_CNT_VALUE)   		            <= s_wr_reg_data; 
+                        
 					when P_SWEPT_PEAK_THD_REG     =>    ctrl_reg_array(P_SWEPT_PEAK_THD_REG)   	        <= s_wr_reg_data;   
 					when P_SWEPT_PEAK_THD_POS_REG =>    ctrl_reg_array(P_SWEPT_PEAK_THD_POS_REG)   	    <= s_wr_reg_data;   
                     
@@ -557,7 +563,15 @@ begin
 						s_resp_reg_value<= ctrl_reg_array(P_SWEPT_CMD_REJECT_CNTR_REG);
 					when P_SWEPT_URX_PARITY_ERR_CNTR_REG =>
 						s_resp_reg_value<= ctrl_reg_array(P_SWEPT_URX_PARITY_ERR_CNTR_REG);		
-                    
+                        
+					when RADICAL_MTIME_PRESET_VALUE =>   
+						s_resp_reg_value<= ctrl_reg_array(RADICAL_MTIME_PRESET_VALUE);
+					when RADICAL_MTIME_FULL_CNT_VALUE =>   
+						s_resp_reg_value<= ctrl_reg_array(RADICAL_MTIME_FULL_CNT_VALUE);
+                        
+					when RADICAL_MTIME_START_CTRL_REG =>   
+						s_resp_reg_value<= ctrl_reg_array(RADICAL_MTIME_START_CTRL_REG);
+                        
 				    when P_SWEPT_PEAK_THD_REG =>
 				        s_resp_reg_value <= ctrl_reg_array(P_SWEPT_PEAK_THD_REG)                ;
                         
