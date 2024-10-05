@@ -87,7 +87,7 @@ end record strobe_t;
   subtype PCB_REG_T is std_logic_vector(PCB_REG_WIDTH-1 downto 0);
   --subtype PCB_ADDR_T is std_logic_vector(PCB_ADDR_WIDTH-1 downto 0);
  -- subtype PCB_PSEL_T is std_logic_vector(PCB_PSEL_WIDTH-1 downto 0);
-  type CTRL_REGS_T is array (0 to 23) of PCB_REG_T;
+  type CTRL_REGS_T is array (0 to 24) of PCB_REG_T;
 
   type T_DDR4_BURST_DATA_TYPE is array (0 to 7) of std_logic_vector(31 downto 0);
   type T_DDR4_BURST_FRM_PTR_TYPE  is array (0 to 7) of std_logic_vector(7 downto 0);
@@ -173,6 +173,7 @@ constant P_SWEPT_DUMP_PEAK2_REG   	        : integer := 20;
 constant P_SWEPT_RESET                      : integer := 21;
 constant RADICAL_MTIME_PRESET_VALUE         : integer := 22;
 constant RADICAL_MTIME_START_CTRL_REG       : integer := 23;
+constant RADICAL_MTIME_FULL_CNT_VALUE       : integer := 24;
 
 -- -----------------------------------------------------------------------------
 -- CONSTANTS DECLARATION for STAR1000 module
@@ -212,8 +213,9 @@ constant RADICAL_MTIME_START_CTRL_REG       : integer := 23;
                                                                           x"00000000",    --  P_SWEPT_DUMP_PEAK1_REG   	    
                                                                           x"00000000",    --  P_SWEPT_DUMP_PEAK2_REG   	    
                                                                           x"00000000",    --  P_SWEPT_RESET                  
-                                                                          x"000003E8",    --  RADICAL_MTIME_PRESET_VALUE    default value = 10s => A        
-                                                                          x"00000000"     --  RADICAL_MTIME_START_CTRL_REG                                                         
+                                                                          x"00000001",    --  RADICAL_MTIME_PRESET_VALUE    default value = 10s => A        
+                                                                          x"00000000",    --  RADICAL_MTIME_START_CTRL_REG     
+                                                                          x"0001869F"     --  RADICAL_MTIME_FULL_CNT_VALUE
                                                                         ); /* synthesis preserve=1*/
                                     
 -- -------------------------------------------------------------
